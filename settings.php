@@ -270,7 +270,7 @@ class settings {
 											} else if(preg_match('/memorykey\.\d+\./', $setting_name)) {
 												$group_id = $groups['dss'];
 											} else if(preg_match('/expansion_module\.\d+\./', $setting_name)) {
-												$group_id = $groups['exp_butttons'];
+												$group_id = $groups['exp_buttons'];
 											}
 
 											// NOTE: For Yealink T65P
@@ -279,7 +279,7 @@ class settings {
 											} else if(preg_match('/memory\d+\.\w+/', $setting_name)) {
 												$group_id = $groups['dss'];
 											} else if(preg_match('/key\d+\.\w+/', $setting_name)) {
-												$group_id = $groups['exp_butttons'];
+												$group_id = $groups['exp_buttons'];
 											}
 										break;
 										case "fanvil": //NOTE: For Fanvil
@@ -288,7 +288,7 @@ class settings {
 											} else if(preg_match('/Fkey\d+\s+\w+/', $setting_name)) {
 												$group_id = $groups['dss'];
 											} else if(preg_match('/expansion_module\.\d+\./', $setting_name) || (preg_match('/exKey\d+\s+\w+/', $setting_name))) {
-												$group_id = $groups['exp_butttons'];
+												$group_id = $groups['exp_buttons'];
 											}
 										break;
 										case "polycom": //NOTE: For Polycom
@@ -299,14 +299,14 @@ class settings {
 												switch($button_index) {
 													case $device->model_name == "VVX600":
 														if(intval($button_index) > 16) {
-															$group_id = $groups['exp_butttons'];
+															$group_id = $groups['exp_buttons'];
 														}
 													break;
 													case $device->model_name == "VVX400":
 													case $device->model_name == "VVX410":
 													case $device->model_name == "VVX500":
 														if(intval($button_index) > 12) {
-															$group_id = $groups['exp_butttons'];
+															$group_id = $groups['exp_buttons'];
 														}
 													break;
 													case $device->model_name == "VVX1500D":
@@ -316,18 +316,18 @@ class settings {
 													case $device->model_name == "SoundPoint IP670":
 													case $device->model_name == "SoundPoint IP650":
 														if(intval($button_index) > 6) {
-															$group_id = $groups['exp_butttons'];
+															$group_id = $groups['exp_buttons'];
 														}
 													break;
 													case $device->model_name == "SoundPoint IP560":
 													case $device->model_name == "SoundPoint IP550":
 														if(intval($button_index) > 4) {
-															$group_id = $groups['exp_butttons'];
+															$group_id = $groups['exp_buttons'];
 														}
 													break;
 													case $device->model_name == "SoundPoint IP450":
 														if(intval($button_index) > 3) {
-															$group_id = $groups['exp_butttons'];
+															$group_id = $groups['exp_buttons'];
 														}
 													break;
 													case $device->model_name == "SoundPoint IP320":
