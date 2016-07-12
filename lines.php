@@ -18,7 +18,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-use includes\db;
+use ombutel\db;
 
 class lines {
 

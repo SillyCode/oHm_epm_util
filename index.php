@@ -18,13 +18,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+require_once('/usr/share/ombutel/www/includes/cli.php');
 require_once('../includes/globals.php');
-require_once('../includes/autoloader.php');
+require_once('../includes/Database.php');
 require_once('template.php');
 require_once('util.php');
 require_once('xepmdb.php');
 
-use includes\db;
+use ombutel\db;
+use ombutel\Database;
 
 spl_autoload_register(function ($classname) {
 	xepmdb::brands($classname);
