@@ -291,6 +291,11 @@ class settings {
 												$group_id = $groups['exp_buttons'];
 											}
 										break;
+										case "vtech": //NOTE: For Vtech
+											if(preg_match('/pfk\.\d+\./', $setting_name)) {
+												$group_id = $groups['dss'];
+											}
+										break;
 										case "polycom": //NOTE: For Polycom
 											if(preg_match('/^attendant\.resourceList\.(\d+)/', $setting_name, $m)) {
 												$group_id = $groups['line']; //Line buttons
