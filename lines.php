@@ -47,7 +47,7 @@ class lines {
 					}
 				}
 				if (count($line_id_array) > 0) {
-					db::delete_in('delete from `xepm_lines`
+					db::query('delete from `xepm_lines`
 						where `line_id` not in (---)',
 						$line_id_array);
 				} else {

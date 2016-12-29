@@ -51,7 +51,7 @@ class modules {
 					}
 				}
 				if (count($module_id_array) > 0) {
-					db::delete_in('delete from `xepm_modules`
+					db::query('delete from `xepm_modules`
 						where `module_id` not in (---)',
 						$module_id_array);
 				} else {

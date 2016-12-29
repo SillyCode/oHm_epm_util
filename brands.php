@@ -47,7 +47,7 @@ class brands {
 					}
 				}
 				if (count($brand_id_array) > 0) {
-					db::delete_in('delete from `xepm_brands`
+					db::query('delete from `xepm_brands`
 						where `brand_id` not in (---)',
 						$brand_id_array);
 				} else {

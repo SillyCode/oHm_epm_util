@@ -47,7 +47,7 @@ class groups {
 					}
 				}
 				if (count($group_id_array) > 0) {
-					db::delete_in('delete from `xepm_setting_types`
+					db::query('delete from `xepm_setting_types`
 						where `setting_type_id` not in (---)',
 						$group_id_array);
 				} else {

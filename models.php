@@ -70,7 +70,7 @@ class models {
 					}
 				}
 				if (count($model_id_array) > 0) {
-					db::delete_in('delete from `xepm_models`
+					db::query('delete from `xepm_models`
 						where `model_id` not in(---)',
 						$model_id_array);
 				} else {

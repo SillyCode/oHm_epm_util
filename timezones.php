@@ -59,7 +59,7 @@ class timezones {
 						}
 					}
 					if (count($timezone_id_array) > 0) {
-						db::delete_in('delete from `xepm_timezones`
+						db::query('delete from `xepm_timezones`
 							where `brand_id` = ?
 							and `timezone_id` not in (---)',
 							$brand_id,

@@ -53,7 +53,7 @@ class configuration_types {
 					}
 				}
 				if (count($type_id_array) > 0) {
-					db::delete_in('delete from `xepm_configuration_types`
+					db::query('delete from `xepm_configuration_types`
 						where `configuration_type_id` not in (---)',
 						$type_id_array);
 				} else {
