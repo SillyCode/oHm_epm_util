@@ -470,7 +470,7 @@ class settings {
 						array_push($parents_array, intval($parent_id->parent_id));
 					}
 					$all_settings = array_merge($setting_id_array, $new_setting_array, $parents_array);
-					db::delete_in('delete
+					db::query('delete
 						from `xepm_settings`
 						where `configuration_type_id` = ? and
 						`setting_id` not in (---)',
