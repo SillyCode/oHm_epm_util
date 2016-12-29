@@ -18,8 +18,6 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-require_once('../includes/db.php');
-
 function get($name, $default = null) { return isset($_GET[$name]) ? $_GET[$name] : $default; }
 function post($name, $default = null) { return isset($_POST[$name]) ? $_POST[$name] : $default; }
 function is_postback() { return (strtolower($_SERVER['REQUEST_METHOD']) == 'post'); }

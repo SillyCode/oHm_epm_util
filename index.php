@@ -19,8 +19,6 @@
  */
 
 require_once('/usr/share/ombutel/www/includes/cli.php');
-require_once('../includes/globals.php');
-require_once('../includes/Database.php');
 require_once('template.php');
 require_once('util.php');
 require_once('xepmdb.php');
@@ -35,13 +33,13 @@ spl_autoload_register(function ($classname) {
 });
 
 function generate_tabs() {
-	$filenames = glob('*.php');
+	$filenames = glob('utils/*.php'); //need to be in utils
 	natcasesort($filenames);
 	return array_map(function($filename) {
 		$filename = str_replace('_', ' ', pathinfo($filename, PATHINFO_FILENAME));
 		return array('url' => urlencode($filename), 'text' => ucwords($filename));
 	}, array_filter($filenames, function($filename) {
-		return (!in_array($filename, ['index.php', 'template.php', 'util.php', 'xepmdb.php']));
+		return (!in_array($filename, ['utils/index.php', 'utils/template.php', 'utils/util.php', 'utils/xepmdb.php']));
 	}));
 }
 
@@ -49,6 +47,7 @@ function generate_content() {
 	$request_url = basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 	if($request_url == 'utils') { return null; }
 	$classname = str_replace('+', '_', strtolower($request_url));
+	chdir('utils'); //need to be in utils
 	ob_start();
 	$classname::render();
 	return ob_get_clean();
