@@ -1,4 +1,4 @@
-# oHm_epm_util
+# epm_utils
 
 Place the content in /www under utils name folder
 Access: server/utils
