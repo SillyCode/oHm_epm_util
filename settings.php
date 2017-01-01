@@ -403,7 +403,46 @@ class settings {
 						}
 						// Insert all the settings
 						foreach($settings as $setting_name => $setting_value) {
-							$group_id = $groups['other'];;
+							$group_id = $groups['other'];
+							switch(strtolower($device->brand_name)) {
+								case "grandstream": {
+									switch($device->model_name) {
+										case "GXP2135":
+										case "GXP2170": {
+											$buttons = [];
+											for($i = 1, $j = 1362; $i < 7; $i++) { // buttons 1-6
+												$buttons[] = 'P' . ++$j;
+												$buttons[] = 'P' . ++$j;
+												$buttons[] = 'P' . ($j + 101);
+												$buttons[] = 'P' . ($j + 102);
+											}
+											for($i = 23800, $j = 7; $j <= 48; $j++) { // buttons 7-48
+												$buttons[] = 'P' . $i++;
+												$buttons[] = 'P' . $i++;
+												$buttons[] = 'P' . $i++;
+												$buttons[] = 'P' . $i++;
+											}
+											if(in_array($setting_name, $buttons)) {
+												$group_id = $groups['dss'];
+												continue;
+											}
+											$exp_buttons = [];
+											for($i = 23000, $j = 1; $j <= 160; $i += 5, $j++) { // buttons 1-160
+												$k = $i;
+												$exp_buttons[] = 'P' . $i;
+												$exp_buttons[] = 'P' . ++$k;
+												$exp_buttons[] = 'P' . ++$k;
+												$exp_buttons[] = 'P' . ++$k;
+											}
+											if(in_array($setting_name, $exp_buttons)) {
+												$group_id = $groups['exp_buttons'];
+											}
+											break;
+										}
+									}
+									break;
+								}
+							}
 							db::query('insert ignore into `xepm_settings` (
 								`parent_id`,
 								`configuration_type_id`,
