@@ -261,7 +261,6 @@ class settings {
 
 								foreach ($parent as $setting_name => $setting_value) {
 									$group_id = $groups['other'];
-// 									var_dump(strtolower($device->brand_name));
 									switch(strtolower($device->brand_name)) {
 										case "yealink": //NOTE: For Yealink
 										case "xorcom";
@@ -297,6 +296,7 @@ class settings {
 											}
 										break;
 										case "polycom": //NOTE: For Polycom
+// 											var_Dump($setting_name);
 											if(preg_match('/^attendant\.resourceList\.(\d+)/', $setting_name, $m)) {
 												$group_id = $groups['line']; //Line buttons
 												list(, $button_index) = $m;
@@ -340,11 +340,9 @@ class settings {
 													case $device->model_name == "SoundPoint IP330":
 													case $device->model_name == "SoundPoint IP331":
 													case $device->model_name == "SoundPoint IP335":
-// 														var_Dump($device->model_name,$button_index);
 														if(intval($button_index) > 2) {
 															$group_id = $groups['exp_buttons'];
 														}
-// 														var_dump($group_id);
 													break;
 												}
 											}
@@ -368,7 +366,6 @@ class settings {
 								}
 							}
 						}
-// 						var_dump($groups);
 // 						die();
 						db::commit();
 					} else { // No parents - all parents are sudo parents
