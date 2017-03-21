@@ -358,6 +358,9 @@ class xepmdb {
 		$models = array();
 		foreach(db::query('select
 				`models`.`model_id`,
+				`models`.`brand_id`,
+				`models`.`sip_lines`,
+				`models`.`max_modules` as `exp_modules`,
 				`models`.`name` as `model_name`,
 				`brands`.`name` as `brand_name`
 			from `xepm_models` as `models`
