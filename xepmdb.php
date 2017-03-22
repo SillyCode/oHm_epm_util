@@ -136,7 +136,7 @@ class xepmdb {
 						lower(hex(`value`)) as `oui`
 					from `xepm_ouis`
 					where `brand_id` = ?', $brand_id) as $oui) {
-					$brand_ouis[] = $oui;
+					$brand_ouis[] = $oui->oui;
 				}
 			}
 			$ouis[$brand_id] = $brand_ouis;

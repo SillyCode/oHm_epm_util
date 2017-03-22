@@ -27,14 +27,16 @@ class ouis {
 			if (($brand_id = intval(trim(util::array_get('brand_id', $_POST)))) > 0) {
 				db::begin_transaction();
 				db::query('delete from `xepm_ouis` where `brand_id` = ?', $brand_id);
-				if (is_array(($oui_array = util::array_get('oui', $_POST)))) {
-					foreach ($oui_array as $oui) {
-						db::query('insert ignore into `xepm_ouis` (
+				if (($ouis = util::array_get('oui', $_POST))) {
+					foreach (explode("\n", trim($ouis)) as $oui) {
+						if(strlen(trim($oui)) > 0) {
+							db::query('insert ignore into `xepm_ouis` (
 								`brand_id`,
 								`value`
 							) values (?, unhex(?))',
 							$brand_id,
 							trim($oui));
+						}
 					}
 				}
 				db::commit();
@@ -49,7 +51,9 @@ class ouis {
 		$tpl = new template('util_ouis.tpl');
 		$tpl->brand_id = $brand_id;
 		$tpl->brands = $brands;
-		$tpl->ouis = xepmdb::brand_ouis($brand_id);
+		$ouis = xepmdb::brand_ouis($brand_id);
+		$tpl->ouis = implode("\n", ($ouis));
+		$tpl->ouis_rows = count($ouis) > 2 ? count($ouis) + 1: 3;
 		$tpl->render();
 	}
 }

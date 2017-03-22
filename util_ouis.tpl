@@ -11,16 +11,11 @@
 			</tr>
 		</thead>
 		<tbody>
-			{loop ouis}<tr>
-				<td><input type="text" name="oui[]" value="{oui}"/></td>
-				<td><input type="button" value="Delete" onclick="delete_row(this)"/></td>
-			</tr>{/loop ouis}
+			<tr>
+				<td><textarea name="oui" rows="{ouis_rows}">{ouis}</textarea>
+			</tr>
 		</tbody>
 		<tfoot>
-			<tr>
-				<td><input type="text" id="oui[]"/></td>
-				<td><input type="button" value="Create" onclick="create_row(this)"/></td>
-			</tr>
 			<tr>
 				<td><input type="submit" value="Apply"/></td>
 				<td></td>
