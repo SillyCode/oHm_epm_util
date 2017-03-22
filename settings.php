@@ -347,6 +347,15 @@ class settings {
 												}
 											}
 										break;
+										case "d-link": //NOTE: For D-Link
+											if(preg_match('/linekey\.\d+\./', $setting_name)) {
+												$group_id = $groups['line'];
+											} else if(preg_match('/Fkey\d+\s+\w+/', $setting_name)) {
+												$group_id = $groups['dss'];
+											} else if(preg_match('/expansion_module\.\d+\./', $setting_name) || (preg_match('/exKey\d+\s+\w+/', $setting_name))) {
+												$group_id = $groups['exp_buttons'];
+											}
+										break;
 									}
 
 									db::query('insert ignore into `xepm_settings` (
