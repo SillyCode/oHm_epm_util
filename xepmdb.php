@@ -340,7 +340,8 @@ class xepmdb {
 		foreach(db::query('select
 				`model_lines`.`model_id`,
 				`model_lines`.`line_id` as `line_name_id`,
-				`model_lines`.`index`
+				`model_lines`.`index`,
+				`lines`.`name` as `line_name`
 			from `xepm_model_lines` as `model_lines`
 			left join `xepm_models` as `models` on (
 				`models`.`model_id` = `model_lines`.`model_id`)

@@ -67,7 +67,16 @@ class assign_lines {
 		$tpl->brands = $brands;
 		$tpl->lines = xepmdb::lines();
 		$tpl->models = xepmdb::model_by_brand($brand_id);
+		uasort($tpl->models, function($a, $b) {
+			return strnatcasecmp($a->model_name, $b->model_name);
+		});
 		$tpl->assigned_lines = xepmdb::model_lines_by_brand($brand_id);
+		uasort($tpl->assigned_lines, function($a, $b) {
+			if (($result = strnatcasecmp($a->model_id, $b->model_id)) == 0) {
+				$result = strnatcasecmp($a->line_name, $b->line_name);
+			}
+			return $result;
+		});
 		$tpl->render();
 	}
 }
