@@ -70,13 +70,15 @@ class models {
 				}
 				if (count($model_id_array) > 0) {
 					db::query('delete from `xepm_models`
-						where `model_id` not in(---)',
-						$model_id_array);
+						where `brand_id` = ? and `model_id` not in(---)',
+						$brand_id,
+						$model_id_array
+					);
 				} else {
-					db::query('delete from `xepm_models` where `model_id` = ?', $brand_id);
+					db::query('delete from `xepm_models` where `brand_id` = ?', $brand_id);
 				}
 			} else {
-				db::query('delete from `xepm_models` where `model_id` = ?', $brand_id);
+// 				db::query('delete from `xepm_brands` where `brand_id` = ?', $brand_id);
 			}
 			db::commit();
 		}
