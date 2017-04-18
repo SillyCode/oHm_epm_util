@@ -22,35 +22,6 @@ use ombutel\db;
 
 class assign_lines {
 
-	private static function assigned_lines() {
-		$assigned_lines = array();
-		foreach(db::query('select
-				`model_lines`.`line_id` as `line_name_id`,
-				`model_lines`.`model_id`,
-				`lines`.`name` as `line_name`,
-				`lines`.`ident` as `value`,
-				`models`.`name` as `model_name`,
-				`brands`.`name` as `brand_name`
-			from `xepm_model_lines` as `model_lines`
-			left join `xepm_models` as `models` on (
-				`models`.`model_id` = `model_lines`.`model_id`)
-			left join `xepm_lines` as `lines` on (
-				`lines`.`line_id` = `model_lines`.`line_id`)
-			left join `xepm_brands` as `brands` on (
-				`brands`.`brand_id` = `models`.`brand_id`)') as $assigned_line) {
-			$assigned_lines[] = $assigned_line;
-		}
-		uasort($assigned_lines, function($a, $b) {
-			if (($result = strnatcasecmp($a->brand_name, $b->brand_name)) == 0) {
-				if (($result = strnatcasecmp($a->model_name, $b->model_name)) == 0) {
-					$result = strnatcasecmp($a->line_name, $b->line_name);
-				}
-			}
-			return $result;
-		});
-		return $assigned_lines;
-	}
-
 	public static function render() {
 		if (is_postback()) {
 			db::begin_transaction();
