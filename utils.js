@@ -20,6 +20,10 @@ function goto_brand(element) { window.location = "?brand_id=" + $(element).val()
 function goto_model(element) { window.location = "?model_id=" + $(element).val(); }
 function goto_module(element) { window.location = "?module_id=" + $(element).val(); }
 function goto_group(element) { window.location = "?group_id=" + $(element).val(); }
+function goto_model_button_types(element) {
+	var brand_id = $('select[name="brand_id"]').val();
+	window.location = "?brand_id=" + brand_id + "&model_id=" + $(element).val();
+}
 function goto_configuration(element) { window.location = "?configuration_type_id=" + $(element).val(); }
 function delete_row(element) { $(element).closest("tr").remove(); }
 function create_row(element) {

@@ -372,6 +372,39 @@ class xepmdb {
 			}
 		return $models;
 	}
+
+	public static function categories() {
+		$categories = array();
+		foreach(db::query('select
+				`category_id`,
+				`ident`,
+				`name`
+			from `xepm_button_categories`') as $row) {
+				$categories[] = $row;
+			}
+		return $categories;
+	}
+
+	public static function model_button_type($model_id) {
+		$model_button_types = array();
+		foreach(db::query('select
+				`model_button_type`.`model_id`,
+				`button_types`.`name`,
+				`button_types`.`ident`,
+				`categories`.`name` as `category`,
+				`categories`.`category_id`
+			from `xepm_model_button_types` as `model_button_type`
+			left join `xepm_button_categories` as `categories` on (
+				`categories`.`category_id` = `model_button_type`.`category_id`)
+			left join `xepm_button_types` as `button_types` on (
+				`button_types`.`button_type_id` = `model_button_type`.`button_type_id`)
+			where `model_id` = ?',
+			$model_id
+			) as $row) {
+				$model_button_types[] = $row;
+			}
+		return $model_button_types;
+	}
 }
 
 ?>
