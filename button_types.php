@@ -26,8 +26,10 @@ class button_types {
 		$content = file_get_contents($filename);
 		$button_types = array();
 		foreach(explode("\n", $content) as $line) {
-			list($ident, $name) = explode(":", $line);
-			$button_types[trim($ident)] = trim($name);
+			if(strpos($line,':') != false) {
+				list($ident, $name) = explode(":", $line);
+				$button_types[trim($ident)] = trim($name);
+			}
 		}
 		return $button_types;
 	}
