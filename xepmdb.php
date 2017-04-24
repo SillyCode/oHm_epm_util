@@ -288,29 +288,50 @@ class xepmdb {
 	}
 
 	// Returns list of brand models with their configuration name
-	public static function model_with_configuration() {
-		foreach(db::query('select
-				`types`.`configuration_type_id` as `type_id`,
-				`types`.`name`,
-				`models`.`model_id`,
-				`models`.`name` as `model_name`,
-				`brands`.`brand_id`,
-				`brands`.`name` as `brand_name`
-			from `xepm_configuration_types` as `types`
-			left join `xepm_models` as `models` on (
-				`models`.`model_id` = `types`.`model_id`)
-			left join `xepm_brands` as `brands` on (
-				`brands`.`brand_id` = `models`.`brand_id`)') as $model_configuration_type) {
-		$model_configuration_types[intval($model_configuration_type->type_id)] = $model_configuration_type;
+	public static function model_with_configuration($brand_id = null) {
+		if($brand_id != null) {
+			foreach(db::query('select
+					`types`.`configuration_type_id` as `type_id`,
+					`types`.`name`,
+					`types`.`ident`,
+					`models`.`model_id`,
+					`models`.`name` as `model_name`,
+					`brands`.`brand_id`,
+					`brands`.`name` as `brand_name`
+				from `xepm_configuration_types` as `types`
+				left join `xepm_models` as `models` on (
+					`models`.`model_id` = `types`.`model_id`)
+				left join `xepm_brands` as `brands` on (
+					`brands`.`brand_id` = `models`.`brand_id`)
+				where `brands`.`brand_id` = ?',
+				$brand_id) as $model_configuration_type) {
+				$model_configuration_types[intval($model_configuration_type->type_id)] = $model_configuration_type;
+			}
+		} else {
+			foreach(db::query('select
+					`types`.`configuration_type_id` as `type_id`,
+					`types`.`name`,
+					`types`.`ident`,
+					`models`.`model_id`,
+					`models`.`name` as `model_name`,
+					`brands`.`brand_id`,
+					`brands`.`name` as `brand_name`
+				from `xepm_configuration_types` as `types`
+				left join `xepm_models` as `models` on (
+					`models`.`model_id` = `types`.`model_id`)
+				left join `xepm_brands` as `brands` on (
+					`brands`.`brand_id` = `models`.`brand_id`)') as $model_configuration_type) {
+				$model_configuration_types[intval($model_configuration_type->type_id)] = $model_configuration_type;
+			}
 		}
 		uasort($model_configuration_types, function($a, $b) {
-				if (($result = strnatcasecmp($a->brand_name, $b->brand_name)) == 0) {
-					if (($result = strnatcasecmp($a->model_name, $b->model_name)) == 0) {
-						$result = strnatcasecmp($a->name, $b->name);
-					}
+			if (($result = strnatcasecmp($a->brand_name, $b->brand_name)) == 0) {
+				if (($result = strnatcasecmp($a->model_name, $b->model_name)) == 0) {
+					$result = strnatcasecmp($a->name, $b->name);
 				}
-				return $result;
-			});
+			}
+			return $result;
+		});
 		return $model_configuration_types;
 	}
 
