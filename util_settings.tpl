@@ -44,37 +44,15 @@
 				<th>Default value</th>
 				<th>Parent</th>
 				<th>Group</th>
-				<th></th>
 			</tr>
 		</thead>
 		<tbody>
 			{loop settings}<tr>
 				<td><input type="text" name="name[]" value="{name}"/></td>
 				<td><input type="text" name="value[]" value='{value}'/></td>
-				<td><select name="parent_id[]" onfocus=" populate_parent_dropdown(this);">{if parents}<option value="null"></option><option value="{parent_id}" selected>{parent_name}</option>{else parents}<option value="null">No parent</option>{/if parents}</select></td>
-				<td><select name="setting_group_id[]"><option></option>{loop groups}<option value="{setting_group_id}"{selectedif setting_group_id setting_group_id}>{group_name}</option>{/loop groups}</select>
-				<td>
-					<input type="hidden" name="setting_id[]" value="{setting_id}"/>
-					<input type="button" value="Delete" onclick="delete_row(this)"/>
-				</td>
+				<td><span name="parent_id[]">{parent_name}</span></td>
+				<td><span name="setting_group_id[]">{group_name}</span></td>
 			</tr>{/loop settings}
 		</tbody>
-		<tfoot>
-			<tr>
-				<td><input type="text" id="name[]"/></td>
-				<td><input type="text" id="value[]"/></td>
-				<td><select id="parent_id[]"><option value="null"></option>{loop parents}<option value="{parent_id}"{selectedif parent_id parent_id}>{parent_name}</option>{/loop parents}</select></td>
-				<td><select id="setting_group_id[]"><option></option>{loop groups}<option value="{setting_group_id}"{selectedif setting_group_id setting_group_id}>{group_name}</option>{/loop groups}</select>
-				<td>
-					<input type="hidden" id="setting_id[]" value=""/>
-					<input type="button" value="Create" onclick="create_row(this)"/>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="3"><input type="submit" value="Apply"/></td>
-				<td></td>
-				<td></td>
-			</tr>
-		</tfoot>
 	</table>
 </form>
