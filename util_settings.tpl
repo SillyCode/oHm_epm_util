@@ -1,8 +1,8 @@
 <h1>Settings</h1>
 <div class="import">
-	<form method="post" enctype="multipart/form-data">
+	<form method="post" class="util_settings_import" enctype="multipart/form-data">
 		<label for="model_id">Import configuration for model</label>
-		<select name="model_id_with_configuration_id"><option></option>{loop models}<option value="{model_id}-{configuration_type_id}">{brand_name} {model_name} - {configuration_name}</option>{/loop models}</select>
+		<select name="model_id_with_configuration_id" class="import_models"><option></option>{loop models}<option value="{model_id}-{configuration_type_id}">{brand_name} {model_name} - {configuration_name}</option>{/loop models}</select>
 		<label for="file">using file:</label>
 		<input type="file" name="file"/><br/>
 		<input type="radio" name="filetype" value="xml"/>
@@ -33,9 +33,9 @@
 		<input type="submit" value="Import"/>
 	</form>
 </div>
-<form method="post">
+<form method="post" class="util_settings_view">
 	<p>Select Configuration Type:
-		<select name="configuration_type_id" onchange="goto_configuration(this)"><option></option>{loop configurations}<option value="{configuration_type_id}"{selectedif configuration_type_id configuration_type_id}>{brand_name} {model_name} - {name}</option>{/loop configurations}</select>
+		<select name="configuration_type_id" class="view_models" onchange="goto_configuration(this)"><option></option>{loop configurations}<option value="{configuration_type_id}"{selectedif configuration_type_id configuration_type_id}>{brand_name} {model_name} - {name}</option>{/loop configurations}</select>
 	</p>
 	<table class="settings">
 		<thead>

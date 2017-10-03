@@ -97,3 +97,9 @@ function populate_parent_dropdown(select) {
 		select.is_populated = true;
 	}
 }
+
+$(document).ready(function() {
+    $('form.util_settings_import select.import_models, \
+		form.util_settings_view select.view_models').select2();
+});
+
