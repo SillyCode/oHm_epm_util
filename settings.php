@@ -466,63 +466,6 @@ class settings {
 						}
 					}
 				}
-			} else if (($configuration_type_id = intval(trim(util::array_get('configuration_type_id', $_GET)))) > 0) {
-				if (is_array(($setting_id_array = util::array_get('setting_id', $_POST))) &&
-					is_array(($name_array = util::array_get('name', $_POST))) &&
-					is_array(($value_array = util::array_get('value', $_POST))) &&
-					is_array(($group_id_array = util::array_get('setting_group_id', $_POST))) &&
-					is_array(($parent_id_array = util::array_get('parent_id', $_POST)))) {
-
-				db::begin_transaction();
-					$new_setting_array = array();
-					foreach ($setting_id_array as $i => &$setting_id) {
-						$setting_id = intval(trim($setting_id));
-						$name = trim(util::array_get($i, $name_array));
-						$value = trim(util::array_get($i, $value_array));
-						$group_id = trim(util::array_get($i, $group_id_array));
-						$parent_id = trim(util::array_get($i, $parent_id_array));
-
-						if($setting_id > 0) { // Update existing setting
-							db::query('update `xepm_settings` set
-								`setting_type_id` = ?,
-								`parent_id` = ?,
-								`name` = ?,
-								`default` = ?
-								where `setting_id` = ?',
-								util::nullable_int($group_id),
-								util::nullable_int($parent_id),
-								$name,
-								trim($value),
-								$setting_id);
-						} else { // Insert new setting
-							$new_setting_id = db::query('insert into `xepm_settings` (
-								`setting_type_id`,
-								`parent_id`,
-								`configuration_type_id`,
-								`name`,
-								`default`
-							) values (?,?,?,?,?)',
-							util::nullable_int($group_id),
-							util::nullable_int($parent_id),
-							$configuration_type_id,
-							$name,
-							trim($value))->insert_id;
-							array_push($new_setting_array, $new_setting_id);
-						}
-					}
-					$parents_array = array();
-					foreach(xepmdb::provision_parents($configuration_type_id) as $parent_id) {
-						array_push($parents_array, intval($parent_id->parent_id));
-					}
-					$all_settings = array_merge($setting_id_array, $new_setting_array, $parents_array);
-					db::query('delete
-						from `xepm_settings`
-						where `configuration_type_id` = ? and
-						`setting_id` not in (---)',
-						$configuration_type_id,
-						$all_settings);
-					db::commit();
-				}
 			}
 			util::redirect();
 		}
