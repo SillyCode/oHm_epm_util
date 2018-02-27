@@ -65,15 +65,14 @@ class configuration_types {
 			db::commit();
 			util::redirect();
 		}
-		$brands = xepmdb::brands();
-		$brand_id = (count($brands) > 0) ? current($brands)->brand_id : 0;
-		$brand_id = intval(trim(util::array_get('brand_id', $_GET, $brand_id)));
-
+		$brand_id = intval(trim(util::array_get('brand_id', $_GET)));
 		$tpl = new template('util_configuration_types.tpl');
-		$tpl->brands = $brands;
+		$tpl->brands = xepmdb::brands();
 		$tpl->brand_id = $brand_id;
-		$tpl->devices = xepmdb::brands_with_models();
-		$tpl->configurations = xepmdb::model_with_configuration($brand_id);
+		$tpl->devices = xepmdb::model_by_brand($brand_id);
+		if($brand_id > 0 ) {
+			$tpl->configurations = xepmdb::model_with_configuration($brand_id);
+		}
 		$tpl->render();
 	}
 }

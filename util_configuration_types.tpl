@@ -2,7 +2,7 @@
 <form method="post">
 
 	<p>Select Brand:
-		<select name="brand_id" onchange="goto_brand(this)">{loop brands}<option value="{brand_id}"{selectedif brand_id brand_id}>{name}</option>{/loop brands}</select>
+		<select name="brand_id" onchange="goto_brand(this)"><option values=''></option>{loop brands}<option value="{brand_id}"{selectedif brand_id brand_id}>{name}</option>{/loop brands}</select>
 	</p>
 
 	<table class="configuration_types">
