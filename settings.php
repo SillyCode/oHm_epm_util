@@ -64,6 +64,43 @@ class settings {
 		return $parents;
 	}
 
+	private static function parse_fanvil_parents($parent_markers, $setting_markers, $input) {
+		$parents = array();
+		$parent_pattern = '/^\s*[' . $parent_markers . ']\s*([^' . $parent_markers . ']+?)\s*[' . $parent_markers . ']/m';
+		$header = true;
+		$parent_name = null;
+		foreach (preg_split($parent_pattern, $input, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE) as $block) {
+			if ($header) {
+				$parent_name = $block;
+				$parents[$parent_name] = null;
+			} else if ($parent_name !== null) {
+				$parents[$parent_name] = self::parse_fanvil_settings($setting_markers, $block);
+			}
+			$header = !$header;
+		}
+		return $parents;
+	}
+
+	private static function parse_fanvil_settings($setting_markers, $input) {
+		$setting_pattern = '/^\s*([^' . $setting_markers . ']+?)\s*[' . $setting_markers . ']\s*([^' . $setting_markers . ']*?)\s*$/m';
+		$settings = array();
+		$subparent_name = null;
+		if (($count = preg_match_all($setting_pattern, trim($input), $m)) > 0) {
+			list(, $names, $values) = $m;
+			for ($i = 0; $i < $count; $i++) {
+				if(preg_match('/^--\s?.*\s?-{0,2}$/', $names[$i])) {
+					$subparent_name = $names[$i];
+				}
+				$setting_name = ($subparent_name) ? "{$subparent_name}.{$names[$i]}" : $names[$i];
+				if(preg_match("/$subparent_name\.$subparent_name/", $setting_name)) {
+					continue; // skip settings of the type: --xxx--.--xxx--
+				}
+				$settings[$setting_name] = $values[$i];
+			}
+		}
+		return $settings;
+	}
+
 	private static function parse_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename) {
 		$parents = array();
 		foreach (simplexml_load_file($filename) as $parent_name => $parent) {
@@ -110,6 +147,69 @@ class settings {
 			}
 		}
 		return $parents;
+	}
+
+	private static function parse_cisco_xml(
+		$indexed_collections, $collection_attribute, $attribute_separator, $filename
+	) {
+		$parents = array();
+		$xml = simplexml_load_file($filename);
+		self::parse_node($parents, $xml, null);
+
+		$parents_organized = array();
+		foreach($parents as $parent_name => $parent) {
+			if(!preg_match('/\//', $parent_name)) { // ignore super node
+				continue;
+			}
+			$parts = explode('/',$parent_name, 3);
+			if(count($parts) == 2) {
+				$parents_organized[$parts[0]][ $parts[1]] = $parent;
+			} else {
+				$parents_organized[$parts[1]][$parts[2]] = $parent;
+			}
+		}
+		return $parents_organized;
+	}
+
+	private static function parse_node(&$parents, $node, $path) {
+		$node_name = $node->getName();
+		$path .= empty($path) ? $node_name : '/' . $node_name;
+		$value = ($node->count() == 0) ? trim($node->__toString()) : null;
+		if(count($node->children()) == 0) {
+			$parents[$path] = $value;
+		}
+
+		$attributes = $node->attributes();
+		$priority = 'priority'; //members
+		if(isset($attributes[$priority])) {
+			$index = (string)$attributes[$priority];
+			$path .= "/{$index}";
+			foreach ($attributes as $attribute_name => $attribute_value) {
+				$parents["$path/@{$attribute_name}"] = (string) $attribute_value;
+			}
+		}
+
+		$button = 'button'; // line buttons
+		if(isset($attributes[$button])) {
+			$index = (string)$attributes[$button];
+			$path .= "/{$index}";
+			foreach ($attributes as $attribute_name => $attribute_value) {
+				$parents["$path/@{$attribute_name}"] = (string) $attribute_value;
+			}
+		}
+
+		$idx = 'idx'; //expansion modules
+		if(isset($attributes[$idx])) {
+			$index = (string)$attributes[$idx];
+			$path .= "/{$index}";
+			foreach ($attributes as $attribute_name => $attribute_value) {
+				$parents["$path/@{$attribute_name}"] = (string) $attribute_value;
+			}
+		}
+
+		foreach($node as $child) {
+			self::parse_node($parents, $child, $path);
+		}
 	}
 
 	private static function import_xml_node(&$parents, $node, $path) {
@@ -201,6 +301,10 @@ class settings {
 							case "escene":
 								$parents = self::parse_escene_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename);
 							break;
+							case "cisco": {
+								$parents = self::parse_cisco_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename);
+								break;
+							}
 							default:
 								$parents = self::parse_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename);
 							break;
@@ -239,6 +343,7 @@ class settings {
 									}
 									break;
 								}
+								case "cisco": { break; }
 							}
 
 							if(strlen($parent_name) > 0) {
@@ -269,7 +374,6 @@ class settings {
 										$parent_id = $setting->setting_id;
 									}
 								}
-
 								foreach ($parent as $setting_name => $setting_value) {
 									$group_id = $groups['other'];
 									switch(strtolower($device->brand_name)) {
@@ -367,6 +471,14 @@ class settings {
 												$group_id = $groups['exp_buttons'];
 											}
 										break;
+										case "cisco" : {
+											if(preg_match('/^sipLines\/line/', $setting_name)) {
+												$group_id = $groups['line'];
+											} elseif(preg_match('/^addOnModule/', $setting_name)) {
+												$group_id = $groups['exp_buttons'];
+											}
+											break;
+										}
 									}
 
 									db::query('insert ignore into `xepm_settings` (
