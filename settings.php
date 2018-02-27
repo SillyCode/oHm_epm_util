@@ -158,6 +158,7 @@ class settings {
 				$error = intval(trim(util::array_get('error', $file)));
 				$filename = trim(util::array_get('tmp_name', $file));
 				$filetype = trim(util::array_get('filetype', $_POST));
+				$action = trim(util::array_get('import_action', $_POST));
 				$has_parents = intval(trim(util::array_get('has_parents', $_POST)));
 				$prefix_separator = trim(util::array_get('prefix_separator', $_POST));
 				$derive_parents = isset($_POST['derive_parents']);
@@ -173,13 +174,19 @@ class settings {
 				if ($error == 0 && is_uploaded_file($filename)) {
 					$parents = array();
 					if ($model_id <= 0) { throw new Exception("Model does not exists"); }
-					if ($configuration_type_id <= 0) { throw new Exception("Configuration type does not exists"); }
-						$device = self::get_device_desc($model_id);
+					if ($configuration_type_id <= 0) {
+						throw new Exception("Configuration type does not exists");
+					}
+					$device = self::get_device_desc($model_id);
 					if ($filetype == "ini") {
 						$input = self::strip_comments($comment_markers, file_get_contents($filename));
 						unlink($filename);
 						if ($has_parents) {
-							$parents = self::parse_parents($parent_markers, $setting_markers, $input);
+							if(strtolower($device->brand_name) == 'fanvil') {
+								$parents = self::parse_fanvil_parents($parent_markers, $setting_markers, $input);
+							} else {
+								$parents = self::parse_parents($parent_markers, $setting_markers, $input);
+							}
 						} else if ($derive_parents) {
 							$parents = self::derive_parents($prefix_separator, self::parse_settings($setting_markers, $input));
 							$settings = self::parse_settings($setting_markers, $input);
@@ -187,8 +194,6 @@ class settings {
 							$settings = self::parse_settings($setting_markers, $input);
 						}
 					} else if ($filetype == "xml") {
-
-
 						switch(strtolower($device->brand_name)) {
 							case "polycom":
 								$parents = self::parse_polycom_xml($attribute_separator, $filename);
@@ -201,8 +206,13 @@ class settings {
 							break;
 						}
 					}
-					// Truncate everything if there is something
-					db::query('delete from `xepm_settings` where `configuration_type_id` = ?', $configuration_type_id);
+					if($action == 'replace') {
+						// Truncate everything if there is something
+						db::query('delete
+							from `xepm_settings`
+							where `configuration_type_id` = ?',
+							$configuration_type_id);
+					}
 
 					$groups = array();
 					foreach(db::query('select
@@ -219,7 +229,7 @@ class settings {
 							$group_id = $groups['other']; // generic
 
 							switch(strtolower($device->brand_name)) {
-								case "escene": //NOTE: For Escene
+								case "escene": { //NOTE: For Escene
 									if(preg_match('/programbuttons/i',$parent_name)) { //linekey
 										$group_id = $groups['line'];
 									} elseif(preg_match('/extension(\d+)?/i', $parent_name)) {
@@ -227,7 +237,8 @@ class settings {
 									} elseif(preg_match('/^hotlines\//i', $parent_name)) { //dss buttons
 										$group_id = $groups['dss'];;
 									}
-								break;
+									break;
+								}
 							}
 
 							if(strlen($parent_name) > 0) {
@@ -244,17 +255,17 @@ class settings {
 									null,
 									$configuration_type_id,
 									$group_id,
-									$parent_name,
+									trim($parent_name),
 									null)->insert_id;
 								if($parent_id <= 0) { // If insert ignore activated - no parent_id returned
 									foreach(query('select
-											`setting_id`
-										from `xepm_settings` where
-											`configuration_type_id` = ? and
-											`name` = ? and
-											`parent_id` is null',
-										$configuration_type_id,
-										$parent_name) as $setting) {
+									`setting_id`
+									from `xepm_settings` where
+									`configuration_type_id` = ? and
+									`name` = ? and
+									`parent_id` is null',
+									$configuration_type_id,
+									$parent_name) as $setting) {
 										$parent_id = $setting->setting_id;
 									}
 								}
@@ -375,7 +386,6 @@ class settings {
 								}
 							}
 						}
-// 						die();
 						db::commit();
 					} else { // No parents - all parents are sudo parents
 						// Insert generic parent into settings
