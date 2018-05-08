@@ -25,8 +25,8 @@ class configuration_types {
 		if (is_postback()) {
 			db::begin_transaction();
 			if (is_array(($name_array = util::array_get('name', $_POST))) &&
-				is_array(($model_id_array = util::array_get('model_id', $_POST))) &&
-				is_array(($type_id_array = util::array_get('type_id', $_POST)))) {
+			is_array(($model_id_array = util::array_get('model_id', $_POST))) &&
+			is_array(($type_id_array = util::array_get('type_id', $_POST)))) {
 				foreach ($type_id_array as $i => &$type_id) {
 					$type_id = intval(trim($type_id));
 					$model_id = intval(trim(util::array_get($i, $model_id_array)));

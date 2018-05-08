@@ -298,14 +298,14 @@ class xepmdb {
 					`models`.`name` as `model_name`,
 					`brands`.`brand_id`,
 					`brands`.`name` as `brand_name`
-				from `xepm_configuration_types` as `types`
-				left join `xepm_models` as `models` on (
-					`models`.`model_id` = `types`.`model_id`)
-				left join `xepm_brands` as `brands` on (
-					`brands`.`brand_id` = `models`.`brand_id`)
+				from `xepm_models` as `models`
+				left join `xepm_brands` as `brands`
+					using (`brand_id`)
+				left join `xepm_configuration_types` as `types`
+					using (`model_id`)
 				where `brands`.`brand_id` = ?',
 				$brand_id) as $model_configuration_type) {
-				$model_configuration_types[intval($model_configuration_type->type_id)] = $model_configuration_type;
+				$model_configuration_types[$model_configuration_type->model_id] = $model_configuration_type;
 			}
 		} else {
 			foreach(db::query('select
