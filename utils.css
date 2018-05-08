@@ -117,3 +117,8 @@ h1 {
 table.settings tbody tr select {
   min-width:100%;
 }
+
+table.settings {
+ font-family: "Courier New", Courier, monospace;
+ text-align: left;
+}

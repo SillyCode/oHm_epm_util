@@ -30,6 +30,12 @@
 			<label for="comment_markers">Comments start with</label>
 			<input type="text" name="comment_markers" value="#">
 		</label><br/>
+		<br/>
+		<input type="radio" name="import_action" value="replace" checked/>
+		<label for="import_action">Import Replace</label><br/>
+		<input type="radio" name="import_action" value="update"/>
+		<label for="import_action">Import Update</label><br/>
+		<br/>
 		<input type="submit" value="Import"/>
 	</form>
 </div>
@@ -48,8 +54,8 @@
 		</thead>
 		<tbody>
 			{loop settings}<tr>
-				<td><input type="text" name="name[]" value="{name}"/></td>
-				<td><input type="text" name="value[]" value='{value}'/></td>
+				<td><span name="name[]">{name}</span></td>
+				<td><span name="value[]">{value}</span></td>
 				<td><span name="parent_id[]">{parent_name}</span></td>
 				<td><span name="setting_group_id[]">{group_name}</span></td>
 			</tr>{/loop settings}
