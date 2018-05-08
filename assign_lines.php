@@ -43,7 +43,7 @@ class assign_lines {
 				foreach ($model_id_array as $i => &$model_id) {
 					$line_id = intval(trim(util::array_get($i, $line_id_array)));
 					if ($model_id > 0) {
-						$model_id = db::query('insert into `xepm_model_lines` (
+						$model_id = db::query('insert ignore into `xepm_model_lines` (
 								`model_id`, `line_id`, `index`)
 							select
 								?,
