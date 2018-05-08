@@ -127,6 +127,30 @@ class settings {
 		return $parents;
 	}
 
+	private static function parse_htek_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename) {
+		$parents = array();
+		foreach (simplexml_load_file($filename) as $parent_name => $parent) {
+			// $parents[$parent_name] = array();
+			foreach ($parent as $setting_name => $setting) {
+				$attributes = $setting->attributes();
+				if ($indexed_collections && isset($attributes[$collection_attribute])) {
+					$index = (string)$attributes[$collection_attribute];
+					$subparent = $index;
+					unset($attributes[$collection_attribute]);
+					if(preg_match('/^([a-z]+).*\./i', $index, $match)) {
+						$subparent = $match[1];
+						$parents[$subparent][$setting_name ."/". $collection_attribute . "/". $index] = (string) $setting;
+					} else {
+						$parents[$parent_name][$setting_name ."/". $collection_attribute . "/". $index] = (string) $setting;
+					}
+				} else {
+					$parents[$parent_name][$setting_name ."/". $collection_attribute . "/". $index] = (string) $setting;
+				}
+			}
+		}
+		return $parents;
+	}
+
 	private static function parse_escene_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename) {
 		$parents = array();
 		foreach (simplexml_load_file($filename) as $parent_name => $parent) {
@@ -163,7 +187,7 @@ class settings {
 			}
 			$parts = explode('/',$parent_name, 3);
 			if(count($parts) == 2) {
-				$parents_organized[$parts[0]][ $parts[1]] = $parent;
+				$parents_organized[$parts[0]][$parts[1]] = $parent;
 			} else {
 				$parents_organized[$parts[1]][$parts[2]] = $parent;
 			}
@@ -201,6 +225,15 @@ class settings {
 		$idx = 'idx'; //expansion modules
 		if(isset($attributes[$idx])) {
 			$index = (string)$attributes[$idx];
+			$path .= "/{$index}";
+			foreach ($attributes as $attribute_name => $attribute_value) {
+				$parents["$path/@{$attribute_name}"] = (string) $attribute_value;
+			}
+		}
+
+		$phoneservice = 'type';
+		if(isset($attributes[$phoneservice])) {
+			$index = (string)$attributes[$phoneservice];
 			$path .= "/{$index}";
 			foreach ($attributes as $attribute_name => $attribute_value) {
 				$parents["$path/@{$attribute_name}"] = (string) $attribute_value;
@@ -305,9 +338,14 @@ class settings {
 								$parents = self::parse_cisco_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename);
 								break;
 							}
+							case 'hanlong': {
+								$parents = self::parse_htek_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename);
+
+								break;
+							}
 							default:
 								$parents = self::parse_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename);
-							break;
+								break;
 						}
 					}
 					if($action == 'replace') {
@@ -339,7 +377,7 @@ class settings {
 									} elseif(preg_match('/extension(\d+)?/i', $parent_name)) {
 										$group_id = $groups['exp_buttons'];
 									} elseif(preg_match('/^hotlines\//i', $parent_name)) { //dss buttons
-										$group_id = $groups['dss'];;
+										$group_id = $groups['dss'];
 									}
 									break;
 								}
@@ -415,7 +453,6 @@ class settings {
 											if(preg_match('/^attendant\.resourceList\.(\d+)/', $setting_name, $m)) {
 												$group_id = $groups['line']; //Line buttons
 												list(, $button_index) = $m;
-// 												var_dump($button_index);
 												switch($button_index) {
 													case $device->model_name == "VVX600":
 														if(intval($button_index) > 16) {
@@ -475,6 +512,14 @@ class settings {
 											if(preg_match('/^sipLines\/line/', $setting_name)) {
 												$group_id = $groups['line'];
 											} elseif(preg_match('/^addOnModule/', $setting_name)) {
+												$group_id = $groups['exp_buttons'];
+											}
+											break;
+										}
+										case 'hanlong': {
+											if(preg_match('/LineKey\d+/i', $setting_name)) { //linekey
+												$group_id = $groups['line'];
+											} elseif(preg_match('/exp\d+/i', $setting_name)) { // expansion
 												$group_id = $groups['exp_buttons'];
 											}
 											break;
