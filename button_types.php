@@ -70,7 +70,7 @@ class button_types {
 					db::begin_transaction();
 					$index = 0;
 					foreach($button_types as $ident => $name) {
-						db::query('insert into `xepm_model_button_types` (
+						db::query('insert ignore into `xepm_model_button_types` (
 							`model_id`,
 							`category_id`,
 							`button_type_id`,
