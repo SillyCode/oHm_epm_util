@@ -284,6 +284,18 @@ class settings {
 		return null;
 	}
 
+	public static function parse_gigaset($filename) {
+		$parents = array();
+		foreach (simplexml_load_file($filename) as $attributes) {
+			if(isset($attributes['name'])) {
+				$setting = (string)$attributes['name'];
+				list($parent) = (explode('.', $setting, 2));
+				// var_dump($parent, $setting);
+				$parents[$parent][$setting] = isset($attributes['value']) ? (string)$attributes['value'] : '';
+			}
+		}
+		return $parents;
+	}
 	public static function render() {
 		if (is_postback()) {
 			if ((trim(util::array_get('model_id_with_configuration_id', $_POST))) &&
@@ -338,9 +350,13 @@ class settings {
 								$parents = self::parse_cisco_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename);
 								break;
 							}
-							case 'hanlong': {
+							case 'hanlong':
+							case 'htek': {
 								$parents = self::parse_htek_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename);
-
+								break;
+							}
+							case 'gigaset': {
+								$parents = self::parse_gigaset($filename);
 								break;
 							}
 							default:
@@ -453,6 +469,7 @@ class settings {
 											if(preg_match('/^attendant\.resourceList\.(\d+)/', $setting_name, $m)) {
 												$group_id = $groups['line']; //Line buttons
 												list(, $button_index) = $m;
+// 												var_dump($button_index);
 												switch($button_index) {
 													case $device->model_name == "VVX600":
 														if(intval($button_index) > 16) {
@@ -516,13 +533,25 @@ class settings {
 											}
 											break;
 										}
-										case 'hanlong': {
+										case 'hanlong':
+										case 'htek': {
+
 											if(preg_match('/LineKey\d+/i', $setting_name)) { //linekey
 												$group_id = $groups['line'];
 											} elseif(preg_match('/exp\d+/i', $setting_name)) { // expansion
 												$group_id = $groups['exp_buttons'];
 											}
 											break;
+										}
+										case 'gigaset': {
+											if(preg_match('/PhoneUI.Keys.FunctionKeys\.(\d+)/i', $setting_name, $match)) {
+												list(, $index) = $match;
+												if($index < 8) {
+													$group_id = $groups['dss'];
+												} else {
+													$group_id = $groups['exp_buttons'];
+												}
+											}
 										}
 									}
 
