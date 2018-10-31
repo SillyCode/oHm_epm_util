@@ -26,11 +26,13 @@ class configuration_types {
 			db::begin_transaction();
 			if (is_array(($name_array = util::array_get('name', $_POST))) &&
 			is_array(($model_id_array = util::array_get('model_id', $_POST))) &&
-			is_array(($type_id_array = util::array_get('type_id', $_POST)))) {
+			is_array(($type_id_array = util::array_get('type_id', $_POST))) &&
+			is_array(($ident_id_array = util::array_get('ident', $_POST)))) {
 				foreach ($type_id_array as $i => &$type_id) {
 					$type_id = intval(trim($type_id));
 					$model_id = intval(trim(util::array_get($i, $model_id_array)));
 					$name = trim(util::array_get($i, $name_array));
+					$value = trim(util::array_get($i, $ident_id_array));
 					if ($type_id > 0) {
 						db::query('update `xepm_configuration_types` set
 								`model_id` = ?,
@@ -38,29 +40,11 @@ class configuration_types {
 								`name` = ?
 							where `configuration_type_id` = ?',
 							$model_id,
-							strtolower($name),
+							strtolower($value),
 							ucfirst($name),
 							$type_id);
-					} else {
-						$type_id = db::query('insert into `xepm_configuration_types` (
-								`model_id`,
-								`ident`,
-								`name`
-							) values (?,?,?)',
-							$model_id,
-							strtolower($name),
-							ucfirst($name))->insert_id;
 					}
 				}
-				if (count($type_id_array) > 0) {
-					db::query('delete from `xepm_configuration_types`
-						where `configuration_type_id` not in (---)',
-						$type_id_array);
-				} else {
-					db::query('truncate table `xepm_configuration_types`');
-				}
-			} else {
-				db::query('truncate table `xepm_configuration_types`');
 			}
 			db::commit();
 			util::redirect();

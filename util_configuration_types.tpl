@@ -22,7 +22,7 @@
 					<input type='hidden' name="model_id[]" value="{model_id}"/>
 				</td>
 				<td><input type="text" name="name[]" value="{name}"/></td>
-				<td><input type="text" name="itent[]" value="{ident}"/></td>
+				<td><input type="text" name="ident[]" value="{ident}"/></td>
 			</tr>
 			{/loop configurations}
 		</tbody>
