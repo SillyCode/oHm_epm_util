@@ -33,17 +33,13 @@ class configuration_types {
 					$model_id = intval(trim(util::array_get($i, $model_id_array)));
 					$name = trim(util::array_get($i, $name_array));
 					$value = trim(util::array_get($i, $ident_id_array));
-					if ($type_id > 0) {
-						db::query('update `xepm_configuration_types` set
-								`model_id` = ?,
-								`ident` = ?,
-								`name` = ?
-							where `configuration_type_id` = ?',
-							$model_id,
-							strtolower($value),
-							ucfirst($name),
-							$type_id);
-					}
+					db::query('replace into `xepm_configuration_types`
+						(`configuration_type_id`, `model_id`, `ident`, `name`) values (?, ?, ?, ?)',
+						$type_id,
+						$model_id,
+						strtolower($value),
+						ucfirst($name)
+					);
 				}
 			}
 			db::commit();
