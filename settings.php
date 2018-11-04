@@ -91,9 +91,9 @@ class settings {
 				if(preg_match('/^--\s?.*\s?-{0,2}$/', $names[$i])) {
 					$subparent_name = $names[$i];
 				}
-				$setting_name = ($subparent_name) ? "{$subparent_name}.{$names[$i]}" : $names[$i];
-				if(preg_match("/$subparent_name\.$subparent_name/", $setting_name)) {
-					continue; // skip settings of the type: --xxx--.--xxx--
+				$setting_name = ($subparent_name) ? "{$subparent_name}/{$names[$i]}" : $names[$i];
+				if(preg_match("/$subparent_name\/$subparent_name/", $setting_name)) {
+					continue; // skip settings of the type: --xxx--/--xxx--
 				}
 				$settings[$setting_name] = $values[$i];
 			}
