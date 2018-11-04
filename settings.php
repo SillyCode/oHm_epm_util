@@ -453,7 +453,7 @@ class settings {
 										case "fanvil": //NOTE: For Fanvil
 											if(preg_match('/linekey\.\d+\./', $setting_name)) {
 												$group_id = $groups['line'];
-											} else if(preg_match('/Fkey\d+\s+\w+/', $setting_name)) {
+											} else if(preg_match('/^Fkey\d+\s+\w+/', $setting_name)) {
 												$group_id = $groups['dss'];
 											} else if(preg_match('/expansion_module\.\d+\./', $setting_name) || (preg_match('/exKey\d+\s+\w+/', $setting_name))) {
 												$group_id = $groups['exp_buttons'];
