@@ -350,6 +350,7 @@ class settings {
 								$parents = self::parse_cisco_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename);
 								break;
 							}
+							case 'xorcom':
 							case 'hanlong':
 							case 'htek': {
 								$parents = self::parse_htek_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename);
