@@ -195,6 +195,27 @@ class settings {
 		return $parents_organized;
 	}
 
+	private static function parse_cisco_linksys($filename) {
+		$parents = array();
+		$xml = simplexml_load_file($filename);
+		self::parse_node($parents, $xml, null);
+
+
+		$parents_organized = array();
+		foreach($parents as $parent_name => $parent) {
+			if(!preg_match('/\//', $parent_name)) { // ignore super node
+				continue;
+			}
+			$parts = explode('/',$parent_name, 3);
+			if(count($parts) == 2) {
+				$parents_organized[$parts[0]][$parts[1]] = $parent;
+			} else {
+				$parents_organized[$parts[0]]["{$parts[1]}/{$parts[2]}"] = $parent;
+			}
+		}
+		return $parents_organized;
+	}
+
 	private static function parse_node(&$parents, $node, $path) {
 		$node_name = $node->getName();
 		$path .= empty($path) ? $node_name : '/' . $node_name;
@@ -240,6 +261,12 @@ class settings {
 			}
 		}
 
+		$ua = 'ua'; //cisco linksys attribute ua user access. Can be ro,rw,na
+		if(isset($attributes[$ua])) {
+			foreach ($attributes as $attribute_name => $attribute_value) {
+				$parents["$path/@{$attribute_name}"] = (string) $attribute_value;
+			}
+		}
 		foreach($node as $child) {
 			self::parse_node($parents, $child, $path);
 		}
@@ -347,7 +374,11 @@ class settings {
 								$parents = self::parse_escene_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename);
 							break;
 							case "cisco": {
-								$parents = self::parse_cisco_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename);
+								if(in_array($device->model_name, [ 'SPA303', 'SPA502G' ])) {
+									$parents = self::parse_cisco_linksys($filename);
+								} else {
+									$parents = self::parse_cisco_xml($indexed_collections, $collection_attribute, $attribute_separator, $filename);
+								}
 								break;
 							}
 							case 'xorcom':
