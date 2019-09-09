@@ -14,7 +14,7 @@
 		</thead>
 		<tbody>
 			{loop assigned_lines}<tr>
-				<td><select name="model_id[]">{loop models}<option value="{model_id}"{selectedif model_id model_id}>{brand_name} {model_name}</option>{/loop models}</select></td>
+				<td><select name="model_id[]">{loop models}<option value="{model_id}"{selectedif model_id model_id}>{model_name}</option>{/loop models}</select></td>
 				<td><select name="line_name_id[]">{loop lines}<option value="{line_name_id}"{selectedif line_name_id line_name_id}>{name} (ident: {ident})</option>{/loop lines}</select></td>
 				<td>
 					<input type="button" value="Delete" onclick="delete_row(this)"/>
@@ -23,7 +23,7 @@
 		</tbody>
 		<tfoot>
 			<tr>
-				<td><select id="model_id[]">{loop models}<option value="{model_id}"{selectedif model_id model_id}>{brand_name} {model_name}</option>{/loop models}</select></td>
+				<td><select id="model_id[]">{loop models}<option value="{model_id}"{selectedif model_id model_id}>{model_name}</option>{/loop models}</select></td>
 				<td><select id="line_name_id[]">{loop lines}<option value="{line_name_id}">{name} (ident: {ident})</option>{/loop lines}</select></td>
 				<td>
 					<input type="button" value="Assign" onclick="create_line_row(this)"/>
