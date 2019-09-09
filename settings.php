@@ -267,6 +267,7 @@ class settings {
 				$parents["$path/@{$attribute_name}"] = (string) $attribute_value;
 			}
 		}
+
 		foreach($node as $child) {
 			self::parse_node($parents, $child, $path);
 		}
@@ -585,6 +586,16 @@ class settings {
 												}
 											}
 										}
+										case 'snom': {
+											if(preg_match('/^fkey(\d+)/i', $setting_name, $match)) { //dss buttons
+												list(, $index) = $match;
+												$group_id = $groups['dss'];
+												if($index > 23) {
+													$group_id = $groups['exp_buttons'];
+												}
+											}
+											break;
+										}
 									}
 
 									db::query('insert ignore into `xepm_settings` (
@@ -642,6 +653,8 @@ class settings {
 								case "grandstream": {
 									switch($device->model_name) {
 										case "GXP2135":
+										case "GXP1760":
+										case "GXP1780":
 										case "GXP2170": {
 											$buttons = [];
 											for($i = 1, $j = 1362; $i < 7; $i++) { // buttons 1-6
@@ -660,6 +673,20 @@ class settings {
 												$group_id = $groups['dss'];
 												continue;
 											}
+											$exp_buttons = [];
+											for($i = 23000, $j = 1; $j <= 160; $i += 5, $j++) { // buttons 1-160
+												$k = $i;
+												$exp_buttons[] = 'P' . $i;
+												$exp_buttons[] = 'P' . ++$k;
+												$exp_buttons[] = 'P' . ++$k;
+												$exp_buttons[] = 'P' . ++$k;
+											}
+											if(in_array($setting_name, $exp_buttons)) {
+												$group_id = $groups['exp_buttons'];
+											}
+											break;
+										}
+										case "GXV3370": {
 											$exp_buttons = [];
 											for($i = 23000, $j = 1; $j <= 160; $i += 5, $j++) { // buttons 1-160
 												$k = $i;
